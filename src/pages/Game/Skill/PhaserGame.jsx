@@ -1,16 +1,27 @@
 import { useEffect } from 'react';
 import Phaser from 'phaser';
+import { io } from 'socket.io-client';
+import { SocketServer } from '../../../Constants';
 
 const PhaserGame = () => {
+  // const [playerCoordinates, setPlayerCoordinates] = useState({ x: 0, y: 0 });
+  // const [isServerConnected, setIsServerConnected] = useState(false);
+
   useEffect(() => {
+    const socket = io(SocketServer);
+
+    console.log(socket.id);
+
     const config = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      parent: 'phaser-game',
+      width: 900,
+      height: 1600,
+      scale: {},
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 0 }, // No gravity for a top-down movement game
+          gravity: { y: 0 },
           debug: true,
         },
       },
@@ -25,6 +36,7 @@ const PhaserGame = () => {
     let player;
     let cursors;
     let spaceKey;
+    let speed = 140;
 
     function preload() {
       // this.load.image('playerUp', '/gameAssets/player_up.png');
@@ -32,16 +44,25 @@ const PhaserGame = () => {
       this.load.image('playerLeft', '/gameAssets/player1_left.png');
       this.load.image('playerRight', '/gameAssets/player1_right.png');
 
-      this.load.image('background', '/gameAssets/player1_left.png'); // Replace with your background image path
+      // this.load.image('background', '/gameAssets/player1_left.png'); // Replace with your background image path
       this.load.image('dead', '/gameAssets/dead_player.png'); // Replace with your enemy image path
     }
 
     function create() {
-      // Add a background image to the game
-      this.add.image(400, 300, 'background');
+      let gameHeight = window.innerHeight - 30;
+      let gameWidth = (gameHeight * 9) / 16;
+      this.scale.resize(gameWidth, gameHeight);
+      // // Add a background image to the game
+      // const gameWidth = this.scale.width;
+      // const gameHeight = this.scale.height;
+      // aspectRatio;
+      // this.add.image(gameWidth / 2, gameHeight / 2, 'background');
 
       // Add a player sprite at the center of the screen
-      player = this.physics.add.sprite(400, 300, 'playerLeft');
+      player = this.physics.add.sprite(0, 0, 'playerLeft');
+
+      player.scaleX = 0.2;
+      player.scaleY = 0.2;
 
       // Make the player stay within the bounds of the game world
       player.setCollideWorldBounds(true);
@@ -66,27 +87,40 @@ const PhaserGame = () => {
       // Horizontal movement
       if (cursors.left.isDown) {
         player.setTexture('playerLeft');
-        player.setVelocityX(-160);
+        player.setVelocityX(-speed);
       } else if (cursors.right.isDown) {
         player.setTexture('playerRight');
-        player.setVelocityX(160);
+        player.setVelocityX(speed);
       }
 
       // Vertical movement
       if (cursors.up.isDown) {
-        player.setVelocityY(-160);
+        player.setVelocityY(-speed);
       } else if (cursors.down.isDown) {
-        player.setVelocityY(160);
+        player.setVelocityY(speed);
+      }
+      if (
+        cursors.up.isDown ||
+        cursors.down.isDown ||
+        cursors.left.isDown ||
+        cursors.right.isDown
+      ) {
+        console.log('Emitting player coordinates to server...');
+        socket.emit('playerCoordinates', {
+          x: player.x,
+          y: player.y,
+        }); // Add your custom logic here
       }
     }
 
     // Cleanup function
     return () => {
+      socket.disconnect();
       game.destroy(true);
     };
   }, []); // Runs once on mount and cleans up on unmount
 
-  return <div id="phaser-game" />;
+  return <div id="phaser-game" className="h-[100vh]" />;
 };
 
 export default PhaserGame;
