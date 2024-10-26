@@ -9,6 +9,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import Landing from './pages/Landing';
+import PhaserGame from './pages/Game/Skill/PhaserGame';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -20,10 +21,7 @@ const router = createBrowserRouter(
           element={<h1>Welcome to the game center to select game</h1>}
         />
         <Route path="luck/" element={<h1>Here the game of luck will go</h1>} />
-        <Route
-          path="skill/"
-          element={<h1>Here the game of skill will go</h1>}
-        />
+        <Route path="skill/" element={<PhaserGame />} />
       </Route>
       ,
       <Route path="about/" element={<h1>About us</h1>} />,
