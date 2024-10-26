@@ -1,6 +1,7 @@
 class Game (
     constructor() {
-        this.name = name;
+        this.canvas = {}
+        this.payer1Coordinates = {};
         this.maker = maker;
         this.engine = engine;
     }

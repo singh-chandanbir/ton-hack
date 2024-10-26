@@ -36,7 +36,7 @@ const PhaserGame = () => {
     let player;
     let cursors;
     let spaceKey;
-    let speed = 140;
+    let speed = 190;
 
     function preload() {
       // this.load.image('playerUp', '/gameAssets/player_up.png');
