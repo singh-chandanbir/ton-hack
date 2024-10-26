@@ -1,10 +1,6 @@
-
-
 const Landing = () => {
   // this page explain what we are buiding and why
-  return (
-    <div>Landing Pages</div>
-  )
-}
+  return <div>Landing Pages</div>;
+};
 
-export default Landing
+export default Landing;
